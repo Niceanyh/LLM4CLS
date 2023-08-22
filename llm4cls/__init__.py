@@ -1,7 +1,7 @@
 # Import modules
-import util
-import few_shot
-import zero_shot
+from . import util
+from . import few_shot
+from . import zero_shot
 import re
 
 # Define package-level variables
