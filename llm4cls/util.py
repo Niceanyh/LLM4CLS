@@ -6,17 +6,17 @@ def zero_shot_prompt_builder(task_description,query,tailor_size=None):
     if tailor_size is None:
         
         if isinstance(task_description, list):
-            return [single_task_description + " ##Input: " + query for single_task_description in task_description]
+            return [single_task_description + " Input: " + query for single_task_description in task_description]
         else:
-            return task_description + " ##Input: " + query
+            return task_description + " Input: " + query
     else:
         words = query.split()
         truncated_words = words[:tailor_size]
         truncated_string = ' '.join(truncated_words)
         if isinstance(task_description, list):
-            return [single_task_description + " ##Input: " + truncated_string for single_task_description in task_description]
+            return [single_task_description + " Input: " + truncated_string for single_task_description in task_description]
         else:
-            return task_description + " ##Input: " + truncated_string
+            return task_description + " Input: " + truncated_string
 
 
 def outputs2Labels(generated_texts,text_to_label):
