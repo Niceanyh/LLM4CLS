@@ -3,7 +3,8 @@ from . import util
 from . import few_shot
 from . import zero_shot
 import re
-
+import tqdm
+import sklearn.metrics
 # Define package-level variables
 package_variable = "This is a package-level variable"
 
