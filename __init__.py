@@ -1,7 +1,7 @@
 # Import modules
-from LLM4CLS import util
-from LLM4CLS import few_shot
-from LLM4CLS import zero_shot
+from llm4cls import util
+from llm4cls import few_shot
+from llm4cls import zero_shot
 import re
 
 # Define package-level variables
