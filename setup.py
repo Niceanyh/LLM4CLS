@@ -6,7 +6,7 @@ setup(
     description='Text Classification with Large Language Models',
     author='niceanyh',
     author_email='niceanyh@gmail.com',
-    url='https://github.com/your_username/your_package',
+    url='https://github.com/Niceanyh/llm4cls',
     packages=find_packages(),
     install_requires=[
         'numpy>=1.18',
