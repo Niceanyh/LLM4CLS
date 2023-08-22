@@ -4,6 +4,14 @@ import tqdm
 def inference(dataset, model,tokenizer, task_description, device,temperature=5, tailor_size=None,majority_vote=False):
     """
     Zero-shot inference
+    dataset: Dataset({features: ['label', 'text']
+    model: Huggingface model
+    tokenizer: Huggingface tokenizer
+    task_description: A string or a list of strings
+    device: torch.device
+    temperature: float
+    tailor_size: int
+    majority_vote: bool
     """
     if majority_vote:
         if isinstance(task_description, str):
@@ -17,7 +25,7 @@ def inference(dataset, model,tokenizer, task_description, device,temperature=5, 
         all_generated_texts = []
         for td in task_description:
             generated_texts = []
-            for query in tqdm(dataset):
+            for query in tqdm(dataset["text"]):
                 encoded_inputs = tokenizer.encode(util.zero_shot_prompt_builder(td, query, tailor_size), return_tensors="pt").to(device)
                 outputs = model.generate(encoded_inputs,temperature=temperature)
                 generated_texts.append(tokenizer.decode(outputs[0]))
@@ -27,7 +35,7 @@ def inference(dataset, model,tokenizer, task_description, device,temperature=5, 
     else:
         # Perform regular inference
         generated_texts = []
-        for query in tqdm(dataset):
+        for query in tqdm(dataset["text"]):
             encoded_inputs = tokenizer.encode(util.zero_shot_prompt_builder(task_description, query, tailor_size), return_tensors="pt").to(device)
             outputs = model.generate(encoded_inputs,temperature=temperature)
             generated_texts.append(tokenizer.decode(outputs[0]))
