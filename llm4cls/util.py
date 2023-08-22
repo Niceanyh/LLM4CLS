@@ -58,7 +58,7 @@ def majority_voting(labels):
 
 
 def eval(true_y,pre_y):
-    task_completeness = (pre_y.count(-1))/len(pre_y)
+    task_completeness = 1- ((pre_y.count(-1))/len(pre_y))
     pre_y[:] = [1 if x == -1 else x for x in pre_y]
     print(classification_report(true_y, pre_y,labels=[0,1],target_names=["Not Personal","Personal"]))
     print("BAC: ",round(balanced_accuracy_score(true_y, pre_y), 3))
