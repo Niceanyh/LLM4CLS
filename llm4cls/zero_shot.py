@@ -1,5 +1,5 @@
 from . import util 
-import tqdm
+from tqdm.auto import tqdm
 
 def inference(dataset, model,tokenizer, task_description, device,temperature=5, tailor_size=None,majority_vote=False):
     """
