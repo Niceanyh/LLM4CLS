@@ -25,7 +25,7 @@ def inference(dataset, model,tokenizer, task_description, device,do_sample=True,
         all_generated_texts = []
         for td in task_description:
             generated_texts = []
-            for query in tqdm(dataset["text"]):
+            for query in tqdm(dataset):
                 encoded_inputs = tokenizer.encode(util.zero_shot_prompt_builder(td, query, tailor_size), return_tensors="pt").to(device)
                 outputs = model.generate(encoded_inputs,do_sample=do_sample,max_new_tokens=max_new_tokens,temperature=temperature)
                 generated_texts.append(tokenizer.decode(outputs[0]))
@@ -35,7 +35,7 @@ def inference(dataset, model,tokenizer, task_description, device,do_sample=True,
     else:
         # Perform regular inference
         generated_texts = []
-        for query in tqdm(dataset["text"]):
+        for query in tqdm(dataset):
             encoded_inputs = tokenizer.encode(util.zero_shot_prompt_builder(task_description, query, tailor_size), return_tensors="pt").to(device)
             outputs = model.generate(encoded_inputs,do_sample=do_sample,max_new_tokens=max_new_tokens,temperature=temperature)
             generated_texts.append(tokenizer.decode(outputs[0]))

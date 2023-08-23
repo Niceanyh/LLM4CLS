@@ -6,11 +6,11 @@ def zero_shot_prompt_builder(task_description,query,tailor_size=None):
     if tailor_size is None:
         
         if isinstance(task_description, list):
-            return [single_task_description + " <Input>: " + query + " <Answer>:" for single_task_description in task_description]
+            return [single_task_description + " <Input>: " + query["text"] + " <Answer>:" for single_task_description in task_description]
         else:
-            return task_description + " <Input>: "+ query+ " <Answer>:"
+            return task_description + " <Input>: "+ query["text"]+ " <Answer>:"
     else:
-        words = query.split()
+        words = query["text"].split()
         truncated_words = words[:tailor_size]
         truncated_string = ' '.join(truncated_words)
         if isinstance(task_description, list):
@@ -19,17 +19,29 @@ def zero_shot_prompt_builder(task_description,query,tailor_size=None):
             return task_description + " <Input>: " + truncated_string + " <Answer>:"
 
 
-def few_shot_prompt_builder(task_description,query,tailor_size=None):
+def few_shot_prompt_builder(task_description,query,sample_dataset,tailor_size=None):
+    """Description
+
+    Args:
+        task_description (_String_): task description as a qestion
+        query (string): query x
+        sample_dataset (_Dataset_): dataset to sample from
+        tailor_size (Int, optional): tailor size for query. Defaults to None.
+
+    Returns:
+        String: Prompt 
+    """
     if tailor_size is None:
         
         if isinstance(task_description, list):
-            return [single_task_description + "<Input>: " + query for single_task_description in task_description]
+            return [single_task_description + "<Input>: " + query["text"] for single_task_description in task_description]
         else:
-            return task_description + "<Input>:  " + query+ " <Answer>:"
+            return task_description + "<Input>:  " + query["text"]+ " <Answer>:"
     else:
-        words = query.split()
+        words = query["text"].split()
         truncated_words = words[:tailor_size]
         truncated_string = ' '.join(truncated_words)
+        
         if isinstance(task_description, list):
             return [single_task_description + "<Input>: " + truncated_string for single_task_description in task_description]
         else:
