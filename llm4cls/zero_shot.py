@@ -1,7 +1,7 @@
 from . import util 
 from tqdm.auto import tqdm
 
-def inference(dataset, model,tokenizer, task_description, device,temperature=5, tailor_size=None,majority_vote=False):
+def inference(dataset, model,tokenizer, task_description, device,temperature=0.7, tailor_size=None,majority_vote=False):
     """
     Zero-shot inference
     dataset: Dataset({features: ['label', 'text']
