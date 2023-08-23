@@ -1,7 +1,7 @@
 from . import util 
 from tqdm.auto import tqdm
 
-def inference(dataset, model,tokenizer, task_description, device,temperature=0.7, tailor_size=None,majority_vote=False):
+def inference(dataset, model,tokenizer, task_description, device,do_sample=True,temperature=0.1,max_new_tokens=50,tailor_size=None,majority_vote=False):
     """
     Zero-shot inference
     dataset: Dataset({features: ['label', 'text']
@@ -27,7 +27,7 @@ def inference(dataset, model,tokenizer, task_description, device,temperature=0.7
             generated_texts = []
             for query in tqdm(dataset["text"]):
                 encoded_inputs = tokenizer.encode(util.zero_shot_prompt_builder(td, query, tailor_size), return_tensors="pt").to(device)
-                outputs = model.generate(encoded_inputs,do_sample=True,temperature=temperature)
+                outputs = model.generate(encoded_inputs,do_sample=do_sample,max_new_tokens=max_new_tokens,temperature=temperature)
                 generated_texts.append(tokenizer.decode(outputs[0]))
             all_generated_texts.append(generated_texts)
         return all_generated_texts
@@ -37,7 +37,7 @@ def inference(dataset, model,tokenizer, task_description, device,temperature=0.7
         generated_texts = []
         for query in tqdm(dataset["text"]):
             encoded_inputs = tokenizer.encode(util.zero_shot_prompt_builder(task_description, query, tailor_size), return_tensors="pt").to(device)
-            outputs = model.generate(encoded_inputs,do_sample=True,temperature=temperature)
+            outputs = model.generate(encoded_inputs,do_sample=do_sample,max_new_tokens=max_new_tokens,temperature=temperature)
             generated_texts.append(tokenizer.decode(outputs[0]))
             
         return generated_texts
