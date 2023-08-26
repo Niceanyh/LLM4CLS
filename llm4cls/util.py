@@ -20,34 +20,35 @@ def zero_shot_prompt_builder(task_description,query,tailor_size=None):
             return task_description + " <Input>: " + truncated_string + " <Answer>:"
 
 
-def few_shot_prompt_builder(task_description,query,samples,tailor_size=None):
+def few_shot_prompt_builder(task_description,query,samples,label2text,tailor_size=None):
     """Description
 
     Args:
         task_description (_String_): task description as a qestion
         query (string): query x
-        sample_dataset (_Dataset_): dataset to sample from
         tailor_size (Int, optional): tailor size for query. Defaults to None.
 
     Returns:
         String: Prompt 
     """
     if tailor_size is None:
-        
-        if isinstance(task_description, list):
-            return [single_task_description + demos +"<Input>: " + query["text"] for single_task_description in task_description]
-        else:
-            return task_description + demos +"<Input>:  " + query["text"]+ " <Answer>:"
+    # not tailor
+        demos = "\n".join([f"<Example {i+1}>: {samples[i]['text']} <Answer>: {label2text(samples[i]['label'])}"
+                              for i in range(len(samples))])
+        return task_description + demos + "\n"+ " <Input>:  " + query["text"] + " <Answer>:"
     else:
-        words = query["text"].split()
-        truncated_words = words[:tailor_size]
-        truncated_string = ' '.join(truncated_words)
+        # tailor input size
+        input = tailer(query,tailor_size)
+        demos = "\n".join([f"<Example {i+1}>: {tailer(samples[i]['text'])} <Answer {i+1}>: {label2text(samples[i]['label'])}"
+                              for i in range(len(samples))])
         
-        if isinstance(task_description, list):
-            return [single_task_description + "<Input>: " + truncated_string for single_task_description in task_description]
-        else:
-            return task_description + "<Input>:  " + truncated_string + " <Answer>:"
+        return task_description + demos + "\n"+ " <Input>:  " + input + " <Answer>:"
 
+def tailer(query,tailor_size):
+    words = query["text"].split()
+    truncated_words = words[:tailor_size]
+    truncated_string = ' '.join(truncated_words)
+    return truncated_string
 
 def outputs2Labels(generated_texts,text_to_label):
     """

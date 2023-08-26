@@ -3,7 +3,7 @@ from tqdm.auto import tqdm
 from datasets import Dataset
 import numpy as np
 
-def inference(dataset,sample_dataset,model,tokenizer, task_description,device,k,sample_method="random",temperature=0.7, tailor_size=None,majority_vote=False):
+def inference(dataset,sample_dataset,model,tokenizer,task_description,label2text,device,k,sample_method="random",temperature=0.7, tailor_size=None,majority_vote=False):
     """
     Zero-shot inference
     dataset: Dataset({features: ['label', 'text', 'embedding']}
@@ -37,7 +37,7 @@ def inference(dataset,sample_dataset,model,tokenizer, task_description,device,k,
             for i in range(len(task_description)):
                 samples_subset = [samples[i:i + k] for i in range(0, len(samples), k)]
                 encoded_inputs = tokenizer.encode(util.few_shot_prompt_builder(
-                    task_description[i], query, samples_subset[i], tailor_size), return_tensors="pt").to(device)
+                    task_description[i], query, samples_subset[i],label2text, tailor_size), return_tensors="pt").to(device)
                 outputs = model.generate(encoded_inputs, do_sample=True, temperature=temperature)
                 generated_texts_for_query.append(tokenizer.decode(outputs[0]))
 
@@ -51,7 +51,7 @@ def inference(dataset,sample_dataset,model,tokenizer, task_description,device,k,
         for query in tqdm(dataset):
             samples = sampler(sample_method, sample_dataset, query, k, replacement=False)
             encoded_inputs = tokenizer.encode(util.few_shot_prompt_builder(
-                task_description, query,samples, tailor_size), return_tensors="pt").to(device)
+                task_description, query,samples, label2text,tailor_size), return_tensors="pt").to(device)
             outputs = model.generate(encoded_inputs, do_sample=True, temperature=temperature)
             all_generated_texts.append(tokenizer.decode(outputs[0]))
 
@@ -78,8 +78,8 @@ def sampler(method_name:str,sample_dataset:Dataset,query, num_samples,replacemen
         #query_embedding = np.array(query["embeddings"])[0]
         #sample_embeddings = np.array(sample_dataset["embeddings"].reshape((len(sample_dataset), -1)))
         embedding_similarity = util.cosine_similarity(query, sample_dataset)
-        top_k_indices = embedding_similarity.argsort()[::-1][:num_samples]
-        return sample_dataset[top_k_indices]
+        top_k_indices = np.array(embedding_similarity).argsort()[::-1][:num_samples]
+        return sample_dataset[list(top_k_indices)]
     else:
         raise ValueError("method_name needs to be either 'random' or 'knn'.")
     
