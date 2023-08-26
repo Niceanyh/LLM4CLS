@@ -19,6 +19,7 @@ def inference(dataset, model,tokenizer, task_description, device,do_sample=True,
     else:
         if not isinstance(task_description, str):
             raise ValueError("task_description needs to be a string when majority_vote is False.")
+        
     
     if majority_vote:
         # Perform majority vote inference

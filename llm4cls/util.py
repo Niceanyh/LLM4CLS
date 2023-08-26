@@ -19,7 +19,7 @@ def zero_shot_prompt_builder(task_description,query,tailor_size=None):
             return task_description + " <Input>: " + truncated_string + " <Answer>:"
 
 
-def few_shot_prompt_builder(task_description,query,sample_dataset,tailor_size=None):
+def few_shot_prompt_builder(task_description,query,samples,tailor_size=None):
     """Description
 
     Args:
@@ -34,9 +34,9 @@ def few_shot_prompt_builder(task_description,query,sample_dataset,tailor_size=No
     if tailor_size is None:
         
         if isinstance(task_description, list):
-            return [single_task_description + "<Input>: " + query["text"] for single_task_description in task_description]
+            return [single_task_description + demos +"<Input>: " + query["text"] for single_task_description in task_description]
         else:
-            return task_description + "<Input>:  " + query["text"]+ " <Answer>:"
+            return task_description + demos +"<Input>:  " + query["text"]+ " <Answer>:"
     else:
         words = query["text"].split()
         truncated_words = words[:tailor_size]
@@ -46,7 +46,6 @@ def few_shot_prompt_builder(task_description,query,sample_dataset,tailor_size=No
             return [single_task_description + "<Input>: " + truncated_string for single_task_description in task_description]
         else:
             return task_description + "<Input>:  " + truncated_string + " <Answer>:"
-
 
 
 def outputs2Labels(generated_texts,text_to_label):
@@ -86,6 +85,17 @@ def majority_voting(labels):
     
     return result
 
+def compute_similarity(query_dataset, sample_dataset):
+    """
+    Compute the similarity between query dataset and sample dataset
+    """
+    sim_matrix = []
+    for query in query_dataset:
+        sim_row = []
+        for sample in sample_dataset:
+            sim_row.append(query["embedding"].cosine(sample["embedding"]))
+        sim_matrix.append(sim_row)
+    return sim_matrix
 
 def eval(true_y,pre_y):
     task_completeness = 1- ((pre_y.count(-1))/len(pre_y))
@@ -93,4 +103,3 @@ def eval(true_y,pre_y):
     print(classification_report(true_y, pre_y,labels=[0,1],target_names=["Not Personal","Personal"]))
     print("BAC: ",round(balanced_accuracy_score(true_y, pre_y), 3))
     print("Task Completeness: ",round(task_completeness,3))
-    
