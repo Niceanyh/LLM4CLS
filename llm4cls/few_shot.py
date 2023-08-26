@@ -1,6 +1,6 @@
 from . import util 
 import tqdm
-import Dataset
+from datasets import Dataset
 def inference(dataset,sample_dataset,model,tokenizer, task_description,device,k,sample_method="random",temperature=0.7, tailor_size=None,majority_vote=False):
     """
     Zero-shot inference
@@ -79,3 +79,4 @@ def sampler(method_name:str,sample_dataset:Dataset,query, num_samples,replacemen
         return sample_dataset[top_k_indices]
     else:
         raise ValueError("method_name needs to be either 'random' or 'knn'.")
+    
