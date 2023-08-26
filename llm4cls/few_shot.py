@@ -1,6 +1,8 @@
 from . import util 
 from tqdm.auto import tqdm
 from datasets import Dataset
+import numpy as np
+
 def inference(dataset,sample_dataset,model,tokenizer, task_description,device,k,sample_method="random",temperature=0.7, tailor_size=None,majority_vote=False):
     """
     Zero-shot inference
@@ -73,8 +75,9 @@ def sampler(method_name:str,sample_dataset:Dataset,query, num_samples,replacemen
             return sample_dataset.sample(num_samples, replace=False)
     elif method_name == "knn":
         # for each query, find the k nearest neighbors
-        query_embedding = query["embedding"]
-        embedding_similarity = query_embedding.cosine(sample_dataset["embedding"])
+        #query_embedding = np.array(query["embeddings"])[0]
+        #sample_embeddings = np.array(sample_dataset["embeddings"].reshape((len(sample_dataset), -1)))
+        embedding_similarity = util.cosine_similarity(query, sample_dataset)
         top_k_indices = embedding_similarity.argsort(descending=True)[:num_samples]
         return sample_dataset[top_k_indices]
     else:

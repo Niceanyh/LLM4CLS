@@ -1,6 +1,7 @@
 import re
 from collections import Counter
 from sklearn.metrics import classification_report,balanced_accuracy_score
+import numpy as np
 
 def zero_shot_prompt_builder(task_description,query,tailor_size=None):
     if tailor_size is None:
@@ -85,16 +86,16 @@ def majority_voting(labels):
     
     return result
 
-def compute_similarity(query_dataset, sample_dataset):
+def compute_similarity(query, sample_dataset):
     """
     Compute the similarity between query dataset and sample dataset
+    query: Dict({features: ['label', 'text', 'embedding']} where embedding size (1,embedding_size)
+    sample_dataset: Dataset({features: ['label', 'text', 'embedding']} where embedding size (num_of_data,embedding_size)
+    
     """
     sim_matrix = []
-    for query in query_dataset:
-        sim_row = []
-        for sample in sample_dataset:
-            sim_row.append(query["embedding"].cosine(sample["embedding"]))
-        sim_matrix.append(sim_row)
+    for sample in sample_dataset:
+        sim_matrix.append(cosine(query["embedding"],sample["embedding"]))
     return sim_matrix
 
 def eval(true_y,pre_y):
@@ -103,3 +104,11 @@ def eval(true_y,pre_y):
     print(classification_report(true_y, pre_y,labels=[0,1],target_names=["Not Personal","Personal"]))
     print("BAC: ",round(balanced_accuracy_score(true_y, pre_y), 3))
     print("Task Completeness: ",round(task_completeness,3))
+    
+    
+def cosine(vec1, vec2):
+    dot_product = np.dot(vec1, vec2.T)
+    norm_vec1 = np.linalg.norm(vec1)
+    norm_vec2 = np.linalg.norm(vec2)
+    similarity = dot_product / (norm_vec1 * norm_vec2)
+    return float(similarity)
