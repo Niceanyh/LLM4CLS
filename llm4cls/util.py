@@ -26,6 +26,7 @@ def few_shot_prompt_builder(task_description,query,samples,label2text,tailor_siz
     Args:
         task_description (_String_): task description as a qestion
         query (string): query x
+        samples: dict({features: ['label', 'text', 'embedding']} list of samples
         tailor_size (Int, optional): tailor size for query. Defaults to None.
 
     Returns:
