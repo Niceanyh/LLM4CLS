@@ -33,7 +33,7 @@ def inference(dataset,sample_dataset,model,tokenizer,task_description,label2text
 
         for query in tqdm(dataset):
             generated_texts_for_query = []
-            samples = sampler(sample_method, sample_dataset, query, num_samples, shuffle=False)
+            samples = sampler(sample_method, sample_dataset, query, num_samples, shuffle=True)
             for i in range(len(task_description)):
                 samples_subset = [samples[i:i + k] for i in range(0, len(samples), k)]
                 encoded_inputs = tokenizer.encode(util.few_shot_prompt_builder(
@@ -49,7 +49,7 @@ def inference(dataset,sample_dataset,model,tokenizer,task_description,label2text
     else:
         all_generated_texts = []
         for query in tqdm(dataset):
-            samples = sampler(sample_method, sample_dataset, query, k, shuffle=False)
+            samples = sampler(sample_method, sample_dataset, query, k, shuffle=True)
             encoded_inputs = tokenizer.encode(util.few_shot_prompt_builder(
                 task_description, query,samples, label2text,tailor_size), return_tensors="pt").to(device)
             outputs = model.generate(encoded_inputs, do_sample=True, temperature=temperature)
