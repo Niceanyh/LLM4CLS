@@ -3,7 +3,7 @@ from tqdm.auto import tqdm
 from datasets import Dataset
 import numpy as np
 
-def inference(dataset,sample_dataset,model,tokenizer,task_description,label2text,device,k,sample_method="random",temperature=0.1, tailor_size=None,majority_vote=False):
+def inference(dataset,sample_dataset,model,tokenizer,task_description,label2text,device,k,sample_method="random",max_new_tokens=20,temperature=0.1, tailor_size=None,majority_vote=False):
     """
     Zero-shot inference
     dataset: Dataset({features: ['label', 'text', 'embedding']}
@@ -34,11 +34,13 @@ def inference(dataset,sample_dataset,model,tokenizer,task_description,label2text
         for query in tqdm(dataset):
             generated_texts_for_query = []
             samples = sampler(sample_method, sample_dataset, query, num_samples, shuffle=True)
+            
+            indices = [[i + j*len(task_description) for i in range(k)] for j in range(len(task_description))]
+            samples_subset = [samples.shuffle().select(indice) for indice in indices]
             for i in range(len(task_description)):
-                samples_subset = [samples[i:i + k] for i in range(0, len(samples), k)]
                 encoded_inputs = tokenizer.encode(util.few_shot_prompt_builder(
                     task_description[i], query, samples_subset[i],label2text, tailor_size), return_tensors="pt").to(device)
-                outputs = model.generate(encoded_inputs, do_sample=True, temperature=temperature)
+                outputs = model.generate(encoded_inputs, do_sample=True,max_new_tokens=max_new_tokens, temperature=temperature)
                 generated_texts_for_query.append(tokenizer.decode(outputs[0]))
 
             all_generated_texts.append(generated_texts_for_query)
