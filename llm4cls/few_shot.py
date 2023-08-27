@@ -3,7 +3,7 @@ from tqdm.auto import tqdm
 from datasets import Dataset
 import numpy as np
 
-def inference(dataset,sample_dataset,model,tokenizer,task_description,label2text,device,k,sample_method="random",temperature=0.7, tailor_size=None,majority_vote=False):
+def inference(dataset,sample_dataset,model,tokenizer,task_description,label2text,device,k,sample_method="random",temperature=0.1, tailor_size=None,majority_vote=False):
     """
     Zero-shot inference
     dataset: Dataset({features: ['label', 'text', 'embedding']}
@@ -33,7 +33,7 @@ def inference(dataset,sample_dataset,model,tokenizer,task_description,label2text
 
         for query in tqdm(dataset):
             generated_texts_for_query = []
-            samples = sampler(sample_method, sample_dataset, query, num_samples, replacement=False)
+            samples = sampler(sample_method, sample_dataset, query, num_samples, shuffle=False)
             for i in range(len(task_description)):
                 samples_subset = [samples[i:i + k] for i in range(0, len(samples), k)]
                 encoded_inputs = tokenizer.encode(util.few_shot_prompt_builder(
@@ -49,7 +49,7 @@ def inference(dataset,sample_dataset,model,tokenizer,task_description,label2text
     else:
         all_generated_texts = []
         for query in tqdm(dataset):
-            samples = sampler(sample_method, sample_dataset, query, k, replacement=False)
+            samples = sampler(sample_method, sample_dataset, query, k, shuffle=False)
             encoded_inputs = tokenizer.encode(util.few_shot_prompt_builder(
                 task_description, query,samples, label2text,tailor_size), return_tensors="pt").to(device)
             outputs = model.generate(encoded_inputs, do_sample=True, temperature=temperature)
@@ -58,7 +58,7 @@ def inference(dataset,sample_dataset,model,tokenizer,task_description,label2text
     return all_generated_texts
 
 
-def sampler(method_name:str,sample_dataset:Dataset,query, num_samples,replacement=True):
+def sampler(method_name:str,sample_dataset:Dataset,query, num_samples,shuffle=True):
     """
     --------------------
     description: sample k samples from sample_dataset
@@ -69,10 +69,11 @@ def sampler(method_name:str,sample_dataset:Dataset,query, num_samples,replacemen
     query: dict (features: ['label', 'text', 'embedding'])
     """
     if method_name == "random":
-        if replacement:
-            return sample_dataset.sample(num_samples, replace=True)
+        if shuffle:
+            return sample_dataset.shuffle().select(range(num_samples))
         else:
-            return sample_dataset.sample(num_samples, replace=False)
+            # get stable samples
+            return sample_dataset.shuffle(seed=42).select(range(num_samples))
     elif method_name == "knn":
         # for each query, find the k nearest neighbors
         #query_embedding = np.array(query["embeddings"])[0]
