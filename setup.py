@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='llm4cls',
-    version='0.2',
+    version='1.0',
     description='Text Classification with Large Language Models',
     author='niceanyh',
     author_email='niceanyh@gmail.com',

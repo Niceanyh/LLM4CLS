@@ -54,7 +54,7 @@ def inference(dataset,sample_dataset,model,tokenizer,task_description,label2text
             samples = sampler(sample_method, sample_dataset, query, k, shuffle=True)
             encoded_inputs = tokenizer.encode(util.few_shot_prompt_builder(
                 task_description, query,samples, label2text,tailor_size), return_tensors="pt").to(device)
-            outputs = model.generate(encoded_inputs, do_sample=True, temperature=temperature)
+            outputs = model.generate(encoded_inputs, do_sample=True, max_new_tokens=max_new_tokens,temperature=temperature)
             all_generated_texts.append(tokenizer.decode(outputs[0]))
 
     return all_generated_texts
