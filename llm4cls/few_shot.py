@@ -80,7 +80,7 @@ def sampler(method_name:str,sample_dataset:Dataset,query, num_samples,shuffle=Tr
         # for each query, find the k nearest neighbors
         #query_embedding = np.array(query["embeddings"])[0]
         #sample_embeddings = np.array(sample_dataset["embeddings"].reshape((len(sample_dataset), -1)))
-        embedding_similarity = util.cosine_similarity(query, sample_dataset)
+        embedding_similarity = util.compute_similarity(query, sample_dataset)
         top_k_indices = np.array(embedding_similarity).argsort()[::-1][:num_samples]
         return sample_dataset[list(top_k_indices)]
     else:
