@@ -99,7 +99,7 @@ def compute_similarity(query, sample_dataset):
     """
     sim_matrix = []
     for sample in sample_dataset:
-        sim_matrix.append(cosine(query["embedding"],sample["embedding"]))
+        sim_matrix.append(cosine(query["embeddings"],sample["embeddings"]))
     return sim_matrix
 
 def eval(true_y,pre_y):
