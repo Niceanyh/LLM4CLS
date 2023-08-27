@@ -82,7 +82,8 @@ def sampler(method_name:str,sample_dataset:Dataset,query, num_samples,shuffle=Tr
         #sample_embeddings = np.array(sample_dataset["embeddings"].reshape((len(sample_dataset), -1)))
         embedding_similarity = util.compute_similarity(query, sample_dataset)
         top_k_indices = np.array(embedding_similarity).argsort()[::-1][:num_samples]
-        return sample_dataset[list(top_k_indices)]
+        return sample_dataset.select(list(top_k_indices))
+        #return sample_dataset[list(top_k_indices)]
     else:
         raise ValueError("method_name needs to be either 'random' or 'knn'.")
 
