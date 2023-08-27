@@ -35,7 +35,7 @@ def inference(dataset,sample_dataset,model,tokenizer,task_description,label2text
             generated_texts_for_query = []
             samples = sampler(sample_method, sample_dataset, query, num_samples, shuffle=True)
             
-            indices = [[i + j*len(task_description) for i in range(k)] for j in range(len(task_description))]
+            indices = [[i*k+j for j in range(k)] for i in range(len(task_description))]
             samples_subset = [samples.shuffle().select(indice) for indice in indices]
             for i in range(len(task_description)):
                 encoded_inputs = tokenizer.encode(util.few_shot_prompt_builder(
@@ -85,4 +85,4 @@ def sampler(method_name:str,sample_dataset:Dataset,query, num_samples,shuffle=Tr
         return sample_dataset[list(top_k_indices)]
     else:
         raise ValueError("method_name needs to be either 'random' or 'knn'.")
-    
+
