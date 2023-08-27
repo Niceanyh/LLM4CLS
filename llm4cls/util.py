@@ -40,7 +40,7 @@ def few_shot_prompt_builder(task_description,query,samples,label2text,tailor_siz
     else:
         # tailor input size
         input = tailer(query,tailor_size)
-        demos = "\n".join([f"<Example {i+1}>: {tailer(samples[i]['text'],tailor_size)} <Answer {i+1}>: {label2text(samples[i]['label'])}"
+        demos = "\n".join([f"<Example {i+1}>: {tailer(samples[i],tailor_size)} <Answer {i+1}>: {label2text(samples[i]['label'])}"
                               for i in range(len(samples))])
         print(task_description + demos + "\n"+ " <Input>:  " + input + " <Answer>:")
         return task_description + demos + "\n"+ " <Input>:  " + input + " <Answer>:"
