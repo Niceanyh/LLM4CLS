@@ -44,9 +44,9 @@ def inference(dataset,sample_dataset,model,tokenizer,task_description,label2text
                 generated_texts_for_query.append(tokenizer.decode(outputs[0]))
 
             all_generated_texts.append(generated_texts_for_query)
-        all_generated_texts = all_generated_texts.transpose()
+        all_generated_texts = np.array(all_generated_texts).transpose()
 
-        return all_generated_texts
+        return list(list(all_generated_text) for all_generated_text in all_generated_texts)
             
     else:
         all_generated_texts = []
