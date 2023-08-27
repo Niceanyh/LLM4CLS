@@ -34,15 +34,18 @@ def few_shot_prompt_builder(task_description,query,samples,label2text,tailor_siz
     """
     if tailor_size is None:
     # not tailor
-        demos = "\n".join([f"<Example{i+1}>: {samples[i]['text']} <Answer{i+1}>: {label2text(samples[i]['label'])}"
+        #demos = "\n".join([f"<Example{i+1}>: {samples[i]['text']} <Answer{i+1}>: {label2text(samples[i]['label'])}" for i in range(len(samples))])
+        #return task_description +"\n"+ demos + "\n"+ " <Input>:  " + query["text"] + " <Answer>:"
+    
+        demos = "\n".join([f"Example {i+1}: {samples[i]['text']} Answer: {label2text(samples[i]['label']) }"
                               for i in range(len(samples))])
-        return task_description +"\n"+ demos + "\n"+ " <Input>:  " + query["text"] + " <Answer>:"
+        return task_description + "\n" + demos + "\nQuestion:"+ query["text"]+ "\nAnswer: "
     else:
         # tailor input size
         input = tailer(query,tailor_size)
-        demos = "\n".join([f"<Example{i+1}>: {tailer(samples[i],tailor_size)} <Answer{i+1}>: {label2text(samples[i]['label'])}"
+        demos = "\n".join([f"Example {i+1}: {tailer(samples[i],tailor_size)} Answer: {label2text(samples[i]['label']) }"
                               for i in range(len(samples))])
-        return task_description +"\n"+ demos + "\n"+ " <Input>:  " + input + "\n" + " <Answer>:"
+        return task_description + "\n" + demos + "\nQuestion:"+ input+ "\nAnswer: "
 
 def tailer(query,tailor_size):
     words = query["text"].split()
