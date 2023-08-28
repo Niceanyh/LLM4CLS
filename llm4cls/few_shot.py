@@ -89,5 +89,5 @@ def sampler(method_name:str,sample_dataset:Dataset,query, num_samples,shuffle=Tr
         return sample_dataset.select(list(top_k_indices))
         #return sample_dataset[list(top_k_indices)]
     else:
-        raise ValueError("method_name needs to be either 'random' or 'knn'.")
+        raise ValueError("sample_method needs to be either 'random' or 'knn'.")
 

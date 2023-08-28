@@ -2,6 +2,8 @@
 from . import util
 from . import few_shot
 from . import zero_shot
+from . import eval
+
 #import re
 #from tqdm.auto import tqdm
 #import sklearn.metrics
