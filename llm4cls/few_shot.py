@@ -8,7 +8,7 @@ def inference(dataset,sample_dataset,model,tokenizer,task_description,label2text
     Zero-shot inference
     dataset: Dataset({features: ['label', 'text', 'embedding']}
     sample_dataset: Dataset({features: ['label', 'text', 'embedding']}
-    model: Huggingface model
+    model: Huggingface model which could do model.generate()
     tokenizer: Huggingface tokenizer
     task_description: A string or a list of strings
     device: torch.device
@@ -24,7 +24,11 @@ def inference(dataset,sample_dataset,model,tokenizer,task_description,label2text
     else:
         if not isinstance(task_description, str):
             raise ValueError("task_description needs to be a string when majority_vote is False.")
-        
+    
+    if do_sample:
+        temperature = None
+    else:
+        temperature = temperature
     
     if majority_vote:
         # Perform majority vote inference
@@ -38,7 +42,7 @@ def inference(dataset,sample_dataset,model,tokenizer,task_description,label2text
             samples_subset = [samples.shuffle().select(indice) for indice in indices]
             for i in range(len(task_description)):
                 encoded_inputs = tokenizer.encode(util.few_shot_prompt_builder(
-                    task_description[i], query, samples_subset[i],label2text, tailor_size), return_tensors="pt").to(device)
+                    task_description[i], query, samples_subset[i],label2text, tailor_size),return_tensors="pt").to(device)
                 outputs = model.generate(encoded_inputs, do_sample=do_sample,max_new_tokens=max_new_tokens, temperature=temperature)
                 generated_texts_for_query.append(tokenizer.decode(outputs[0]))
 
@@ -48,6 +52,7 @@ def inference(dataset,sample_dataset,model,tokenizer,task_description,label2text
         return list(list(all_generated_text) for all_generated_text in all_generated_texts)
             
     else:
+        # Perform single inference
         all_generated_texts = []
         for query in tqdm(dataset):
             samples = sampler(sample_method, sample_dataset, query, k, shuffle=True)
