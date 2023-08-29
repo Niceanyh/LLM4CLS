@@ -1,6 +1,6 @@
 import numpy as np
 from statsmodels.stats.contingency_tables import mcnemar
-from llm4cls.utils import majority_voting, outputs2Labels
+from llm4cls.util import majority_voting, outputs2Labels
 
 def compute_mcnemar_table(method1_labels, method2_labels, true_labels):
     # Initialize the four counts
