@@ -14,7 +14,9 @@ def inference(dataset,sample_dataset,model,tokenizer,task_description,label2text
     device: torch.device
     k: int number of samples to sample from dataset
     sample_method: str ["random", "knn"]
+    max_new_tokens:
     temperature: float
+    do_sample: 
     tailor_size: int
     majority_vote: bool
     """

@@ -5,7 +5,7 @@ from llm4cls.utils import majority_voting, outputs2Labels
 def compute_mcnemar_table(method1_labels, method2_labels, true_labels):
     # Initialize the four counts
     a = b = c = d = 0
-    
+
     # Calculate the counts based on the labels
     for m1, m2, true in zip(method1_labels, method2_labels, true_labels):
         if m1 == true and m2 == true:
@@ -34,6 +34,7 @@ def perform_mcnemar_test(method1_predictions, method2_predictions,true_labels,te
     method2_labels = majority_voting(outputs2Labels(method2_predictions, text_to_label))
     
     mcnemar_table = compute_mcnemar_table(method1_labels, method2_labels,true_labels)
+    print("mcnemar_table:",mcnemar_table)
     result = mcnemar(mcnemar_table, exact=True, correction=True)
     
     statistic = result.statistic
