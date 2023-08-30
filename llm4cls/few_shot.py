@@ -28,8 +28,9 @@ def inference(dataset,sample_dataset,model,tokenizer,task_description,label2text
             raise ValueError("task_description needs to be a string when majority_vote is False.")
     
     if not do_sample:
-        temperature = None
+        temperature = 0.1
     else:
+        # do_sample = True
         temperature = temperature
     
     if majority_vote:

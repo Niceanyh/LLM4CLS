@@ -34,7 +34,7 @@ def perform_mcnemar_test(method1_predictions, method2_predictions,true_labels,te
     method2_labels = majority_voting(outputs2Labels(method2_predictions, text_to_label))
     
     mcnemar_table = compute_mcnemar_table(method1_labels, method2_labels,true_labels)
-    print("mcnemar_table:",mcnemar_table)
+    #print("mcnemar_table:",mcnemar_table)
     result = mcnemar(mcnemar_table, exact=True, correction=True)
     
     statistic = result.statistic
